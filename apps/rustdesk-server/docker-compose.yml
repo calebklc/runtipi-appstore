@@ -1,0 +1,58 @@
+services:
+  rustdesk-server:
+    container_name: rustdesk-server
+    image: rustdesk/rustdesk-server-s6:1.1.11-1
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - RELAY=rustdesk.${LOCAL_DOMAIN}:21117
+      - ENCRYPTED_ONLY=1
+      - DB_URL=/db/db_v2.sqlite3
+      - KEY_PRIV=${RUSTDESK_KEY_PRIV}
+      - KEY_PUB=${RUSTDESK_KEY_PUB}
+    volumes:
+      - ${APP_DATA_DIR}/data/rd:/data
+      - ${APP_DATA_DIR}/data/db:/db
+    networks:
+      - tipi_main_network # That should not be changed
+    labels:
+      traefik.enable: true
+      # 21115/tcp
+      traefik.tcp.routers.rustdesk-rd5.entrypoints: rd5-tcp
+      traefik.tcp.routers.rustdesk-rd5.rule: HostSNI(`*`)
+      traefik.tcp.routers.rustdesk-rd5.service: rustdesk-rd5
+      traefik.tcp.services.rustdesk-rd5.loadbalancer.server.port: 21115
+      traefik.tcp.routers.rustdesk-rd5.tls: false
+      traefik.tcp.routers.rustdesk-rd5.tls.passthrough: true
+      # 21116/tcp
+      traefik.tcp.routers.rustdesk-rd6.entrypoints: rd6-tcp
+      traefik.tcp.routers.rustdesk-rd6.rule: HostSNI(`*`)
+      traefik.tcp.routers.rustdesk-rd6.service: rustdesk-rd6
+      traefik.tcp.services.rustdesk-rd6.loadbalancer.server.port: 21116
+      traefik.tcp.routers.rustdesk-rd6.tls: false
+      traefik.tcp.routers.rustdesk-rd6.tls.passthrough: true
+      # 21116/udp
+      traefik.udp.routers.rustdesk-rd6.entrypoints: rd6-udp
+      traefik.udp.routers.rustdesk-rd6.service: rustdesk-rd6
+      traefik.udp.services.rustdesk-rd6.loadbalancer.server.port: 21116
+      # 21117/tcp
+      traefik.tcp.routers.rustdesk-rd7.entrypoints: rd7-tcp
+      traefik.tcp.routers.rustdesk-rd7.rule: HostSNI(`*`)
+      traefik.tcp.routers.rustdesk-rd7.service: rustdesk-rd7
+      traefik.tcp.services.rustdesk-rd7.loadbalancer.server.port: 21117
+      traefik.tcp.routers.rustdesk-rd7.tls: false
+      traefik.tcp.routers.rustdesk-rd7.tls.passthrough: true
+      # 21118/tcp
+      traefik.tcp.routers.rustdesk-rd8.entrypoints: rd8-tcp
+      traefik.tcp.routers.rustdesk-rd8.rule: HostSNI(`*`)
+      traefik.tcp.routers.rustdesk-rd8.service: rustdesk-rd8
+      traefik.tcp.services.rustdesk-rd8.loadbalancer.server.port: 21118
+      traefik.tcp.routers.rustdesk-rd8.tls: false
+      traefik.tcp.routers.rustdesk-rd8.tls.passthrough: true
+      # 21119/tcp
+      traefik.tcp.routers.rustdesk-rd9.entrypoints: rd9-tcp
+      traefik.tcp.routers.rustdesk-rd9.rule: HostSNI(`*`)
+      traefik.tcp.routers.rustdesk-rd9.service: rustdesk-rd9
+      traefik.tcp.services.rustdesk-rd9.loadbalancer.server.port: 21119
+      traefik.tcp.routers.rustdesk-rd9.tls: false
+      traefik.tcp.routers.rustdesk-rd9.tls.passthrough: true
